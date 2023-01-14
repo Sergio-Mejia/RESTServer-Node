@@ -2,20 +2,34 @@ const { response } = require( 'express' )
 
 
 const usersGet = (req, res = response) => {
+
+    const { q, nombre = 'No name', apikey} = req.query
+
     res.json({
-        msg: "Get Controlador"
+        msg: "Get Controlador",
+        q,
+        nombre,
+        apikey
     })
 }
 
 const userPost = (req, res = response) => {
+
+    const { nombre, edad } = req.body;
+
     res.status(201).json({
-        msg: "Post Controlador"
+        msg: "Post Controlador",
+        nombre,
+        edad
     })
 }
 
 const userPut = (req, res = response ) => {
+
+    const {id} = req.params;
     res.status(400).json({
-        msg: "Put Controlador"
+        msg: "Put Controlador",
+        id
     })
 }
 
