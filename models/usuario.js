@@ -1,5 +1,6 @@
 const { Schema, model } = require('mongoose');
 
+
 const usuarioSchema = Schema({
     name: {
         type: String,
