@@ -57,10 +57,17 @@ const userPut = async (req, res = response) => {
     })
 }
 
-const userDelete = (req, res = response) => {
-    res.json({
-        msg: "Delete Controlador"
-    })
+
+const userDelete = async(req, res = response) => {
+    const { id } = req.params;
+
+    //Borrar fisicamente
+    // const usuario = await Usuario.findByIdAndDelete( id );
+    
+    //Cambiar estado del usuario
+    const usuario = await Usuario.findByIdAndUpdate( id, { state: false} );
+
+    res.json( usuario );
 }
 
 
