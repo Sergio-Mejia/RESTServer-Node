@@ -3,15 +3,22 @@ const Usuario = require('../models/usuario')
 const bcryptjs = require('bcryptjs')
 
 
-const usersGet = (req, res = response) => {
+const usersGet = async (req, res = response) => {
 
-    const { q, nombre = 'No name', apikey } = req.query
+
+    const { limite = 5, desde = 0 } = req.query;
+    const query = { state: true };
+
+    const [ total, usuarios ] = await Promise.all([
+        Usuario.countDocuments(query),
+        Usuario.find(query)
+            .skip(desde)
+            .limit(limite)
+    ]);
 
     res.json({
-        msg: "Get Controlador",
-        q,
-        nombre,
-        apikey
+        total,
+        usuarios
     })
 }
 
@@ -28,12 +35,10 @@ const userPost = async (req, res = response) => {
     //Guardar en base de datos
     await usuario.save();
 
-    res.json({
-        usuario
-    })
+    res.json(usuario)
 }
 
-const userPut = async(req, res = response) => {
+const userPut = async (req, res = response) => {
 
     const { id } = req.params;
     const { _id, password, google, email, ...resto } = req.body;
@@ -44,11 +49,10 @@ const userPut = async(req, res = response) => {
         resto.password = bcryptjs.hashSync(password, salt);
     }
 
-    const usuarioDB = await Usuario.findByIdAndUpdate( id, resto );
+    const usuarioDB = await Usuario.findByIdAndUpdate(id, resto);
 
 
     res.status(400).json({
-        msg: "Put Controlador",
         usuarioDB
     })
 }
