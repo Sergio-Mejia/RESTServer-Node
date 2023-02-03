@@ -19,6 +19,10 @@
         data-shape="rectangular" data-logo_alignment="left">
     </div>
 
+    <button id="google_signout">
+        SignOut
+    </button>
+
 
 
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -43,10 +47,27 @@
                 .then( resp => resp.json() )
                 .then( resp => {
                     console.log( resp ); 
+                    localStorage.setItem( 'email', resp.usuario.email )
                 })
                 .catch( console.warn )
         } 
-    </script>
+
+
+        const button = document.getElementById('google_signout');
+        button.onclick = ()=>{
+            console.log( google.accounts.id ) 
+            google.accounts.id.disableAutoSelect()
+
+            //obtener email de localStorage para logout
+            google.accounts.id.revoke( localStorage.getItem( 'email' ), done => {
+                //Limpiar localSorage
+                localStorage.clear();
+                // Reacargar la pagina y borrar cualquier estado de la app
+                location.reload();
+            })
+        }
+
+</script>
 
 </body>
 
