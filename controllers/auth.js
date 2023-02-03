@@ -1,11 +1,11 @@
 const { response, json } = require("express");
-const bcryptjs = require( 'bcryptjs' );
+const bcryptjs = require('bcryptjs');
 
 const Usuario = require('../models/usuario');
 const { generarJWT } = require("../helpers/generarJWT");
 const { googleVerify } = require("../helpers/google-verify");
 
-const login = async(req, res = response) => {
+const login = async (req, res = response) => {
 
     const { email, password } = req.body;
 
@@ -13,30 +13,30 @@ const login = async(req, res = response) => {
 
         //Verificar si el email existe
         const usuario = await Usuario.findOne({ email });
-        if( !usuario ){
+        if (!usuario) {
             return res.status(400).json({
-                msg : "Usuario/Contraseña no son correctos - email"
+                msg: "Usuario/Contraseña no son correctos - email"
             })
         }
-       
-        
+
+
         //Verificar si el usuario esta activo
-        if( !usuario.state ){
+        if (!usuario.state) {
             return res.status(400).json({
-                msg : "Usuario/Contraseña no son correctos - estado False"
+                msg: "Usuario/Contraseña no son correctos - estado False"
             })
         }
 
         //Verificar la contraseña
-        const validPassword = bcryptjs.compareSync( password, usuario.password );
-        if( !validPassword ){
+        const validPassword = bcryptjs.compareSync(password, usuario.password);
+        if (!validPassword) {
             return res.status(400).json({
-                msg : "Usuario/Contraseña no son correctos - Password"
+                msg: "Usuario/Contraseña no son correctos - Password"
             })
         }
 
         //Generar JWT  
-        const token = await generarJWT( usuario.id ); 
+        const token = await generarJWT(usuario.id);
 
 
         res.json({
@@ -52,27 +52,52 @@ const login = async(req, res = response) => {
     }
 }
 
-const googleSignIn = async(req, res = response) => {
-    const {id_token} = req.body;
-
+const googleSignIn = async (req, res = response) => {
+    const { id_token } = req.body;
 
     try {
-        
-        const googleUser = await googleVerify( id_token )
-        console.log( googleUser ) 
+
+        const {email, name, img } = await googleVerify(id_token)
+
+        //Generar referencia
+        let usuario = await Usuario.findOne({ email });
+        if( !usuario ){
+            //Si no existe tengo que grabarlo
+            const data = {
+                name,
+                email,
+                password: ':0',
+                img,
+                rol: 'ADMIN_ROLE',
+                google: true
+            }
+
+            usuario = new Usuario( data );
+            await usuario.save();
+        }
+
+        //Si el usuario en DB 
+        if( !usuario.state ){
+            return res.status(401).json({
+                msg: 'Usuario bloqueado'
+            });
+        }
+
+
+        //Generar JWT
+        const token = await generarJWT(usuario.id);
 
         res.json({
-            msg: 'Todo Ok', 
-            id_token
-        })
+            usuario,
+            token
+        });
 
     } catch (error) {
-        json.status(400).json({
+        res.status(400).json({
             ok: false,
             msg: "El token no se pudo verificar"
-        })
+        });
     }
-
 }
 
 
