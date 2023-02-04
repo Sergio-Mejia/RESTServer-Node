@@ -4,7 +4,8 @@ const { Schema, model } = require("mongoose");
 const categorySchema = Schema({
     name: {
         type: String,
-        required: [true, 'El nombre es obligatorio ']
+        required: [true, 'El nombre es obligatorio '],
+        unique: true
     },
     estado : {
         type: Boolean,
@@ -18,4 +19,10 @@ const categorySchema = Schema({
     }
 })
 
-module.exports = model( 'Role', categorySchema)
+categorySchema.methods.toJSON = function(){
+    //Sacar version y password del json de respuesta, los demas params se guardan en ...usuario
+    const { __v, estado, ...data } = this.toObject();
+    return data;
+}
+
+module.exports = model( 'Category', categorySchema)
