@@ -34,7 +34,6 @@ const obtenerCategoria = async( req, res = response) => {
 
 
 
-
 const crearCategoria = async( req, res = response) => {
     const name = req.body.name.toUpperCase();
 
