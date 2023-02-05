@@ -30,13 +30,14 @@ const usuarioSchema = Schema({
     google: {
         type: Boolean,
         default: false,
-    },
+    }
 
 });
 
 usuarioSchema.methods.toJSON = function(){
     //Sacar version y password del json de respuesta, los demas params se guardan en ...usuario
-    const { __v, password, ...usuario } = this.toObject();
+    const { __v, password, _id, ...usuario } = this.toObject();
+    usuario.uid = _id;
     return usuario;
 }
 
