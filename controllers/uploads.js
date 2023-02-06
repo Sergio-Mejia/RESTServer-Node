@@ -12,16 +12,30 @@ const cargarArchivos = (req, res = response) => {
 
     const { archivo } = req.files; 
 
+    const nombreCortado = archivo.name.split('.');
+    const extension = nombreCortado[ nombreCortado.length - 1 ]
+
+    //Validar la extension
+    const extensionesValidas = ['jpg', 'png', 'jpeg', 'gif']
+    if( !extensionesValidas.includes( extension )){
+        res.status(400).json({
+            msg: `La extension ${extension} no es permitida. Extensiones permitidas: ${ extensionesValidas }`
+        })
+    }
+
+    res.json( extension )
+
+    console.log( nombreCortado );
     //Ruta donde voy a mandar los archivos -> path.join para unir toda la ruta
-    const uploadPath = path.join( __dirname , '../uploads/', archivo.name ) ;
+    // const uploadPath = path.join( __dirname , '../uploads/', archivo.name ) ;
 
-    archivo.mv(uploadPath, (err) => {
-        if (err) {
-            return res.status(500).json({ err });
-        }
+    // archivo.mv(uploadPath, (err) => {
+    //     if (err) {
+    //         return res.status(500).json({ err });
+    //     }
 
-        res.json({ msg: 'File uploaded to ' + uploadPath });
-    });
+    //     res.json({ msg: 'File uploaded to ' + uploadPath });
+    // });
 }
 
 
