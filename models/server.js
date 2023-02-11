@@ -3,7 +3,7 @@ const cors = require('cors');
 const { dbConnection } = require('../database/config');
 const fileUpload = require('express-fileupload');
 const { socketController } = require('../sockets/controller');
-
+ 
 class Server {
 
     constructor() {
