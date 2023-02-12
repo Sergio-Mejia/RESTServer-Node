@@ -26,6 +26,18 @@ const validarJWT = async() => {
     usuario = userDB;
 
     document.title = usuario.name;
+
+    await conectarSocket();
+}
+
+
+const conectarSocket = async() => {
+    
+    const socket = io({
+        'extraHeaders': {
+            'x-token': localStorage.getItem('token')
+        }
+    });
 }
 
 
@@ -40,4 +52,3 @@ const main = async() => {
 main();
 
 
-// const socket = io();
