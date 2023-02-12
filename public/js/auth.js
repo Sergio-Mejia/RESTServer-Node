@@ -3,40 +3,41 @@ const miFormulario = document.querySelector('form');
 
 
 
-const url = ( window.location.hostname.includes('localhost'))
-            ? "http://localhost:8080/api/auth/"
-            : "http://localhost:8081/api/auth/"
+const url = (window.location.hostname.includes('localhost'))
+    ? "http://localhost:8080/api/auth/"
+    : "http://localhost:8081/api/auth/"
 
 
 
-miFormulario.addEventListener('submit', ev=> {
+miFormulario.addEventListener('submit', ev => {
     //Evitar hacer refresh del navegador
     ev.preventDefault();
 
     const formData = {};
 
-    for( let element of miFormulario.elements){
-        if(element.name.length > 0){
+    for (let element of miFormulario.elements) {
+        if (element.name.length > 0) {
             formData[element.name] = element.value;
         }
     }
 
-    fetch( url + 'login', {
+    fetch(url + 'login', {
         method: 'POST',
-        body: JSON.stringify( formData ),
-        headers: {'Content-Type': 'application/json'}
+        body: JSON.stringify(formData),
+        headers: { 'Content-Type': 'application/json' }
     })
-    .then( resp => resp.json() )
-    .then( ({ msg, token }) => {
-        if( msg ){
-            return console.error( msg );
-        }
+        .then(resp => resp.json())
+        .then(({ msg, token }) => {
+            if (msg) {
+                return console.error(msg);
+            }
 
-        localStorage.setItem('token', token);
-    })
-    .catch( err => {
-        console.log(err)
-    })
+            localStorage.setItem('token', token);
+            window.location = 'chat.html';
+        })
+        .catch(err => {
+            console.log(err)
+        })
 })
 
 
@@ -56,6 +57,7 @@ function handleCredentialResponse(response) {
         .then((resp) => resp.json())
         .then(({ token }) => {
             localStorage.setItem('token', token);
+            window.location = 'chat.html';
         })
         .catch(console.warn);
 }
